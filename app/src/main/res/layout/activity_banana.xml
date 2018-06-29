@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:opensdk="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Banana">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+     <!--Android: XML to declare banner ad view (uncomment to show banner)-->
+
+    <!--<com.appnexus.opensdk.BannerAdView-->
+        <!--android:id="@+id/banner"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--opensdk:placement_id="13194659"-->
+        <!--opensdk:auto_refresh_interval="60000"-->
+        <!--opensdk:adWidth="320"-->
+        <!--opensdk:adHeight="50"-->
+        <!--opensdk:should_reload_on_resume="true"-->
+        <!--opensdk:opens_native_browser="true"-->
+        <!--opensdk:expands_to_fit_screen_width="false"-->
+        <!--/>-->
+
+</android.support.constraint.ConstraintLayout>
