@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.FrameLayout;
+
+import com.aerserv.sdk.AerServSdk;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.R.*;
+
+// Reference: https://support.aerserv.com/hc/en-us/articles/213736326
 
 public class Banana extends Activity implements AdListener {
 
@@ -19,6 +23,10 @@ public class Banana extends Activity implements AdListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_banana);
+
+        // Init the AerServ SDK
+        AerServSdk.init(this, "380000");
+
 
         bav = new BannerAdView(this);
         iav = new InterstitialAdView(this);
