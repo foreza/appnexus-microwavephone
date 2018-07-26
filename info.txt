@@ -1,0 +1,3 @@
+local map: mediation.adnxs.com
+w/ that json
+we dont have an example for interstitial unfortunately cause they've updated their responses w/ their recent SDK

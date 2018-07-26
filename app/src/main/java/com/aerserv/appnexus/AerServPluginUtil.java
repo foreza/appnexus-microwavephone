@@ -1,11 +1,11 @@
 package com.aerserv.appnexus;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.aerserv.sdk.utils.AerServLog;
 
 import org.json.JSONObject;
-import com.aerserv.sdk.AerServConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +25,8 @@ public class AerServPluginUtil {
         Map<String, String> publisherKeywords = new HashMap<>();
         for (Pair<String, String> keyword : appNexusKeywords) {
           publisherKeywords.put(keyword.first, keyword.second);
+          Log.d("PII-TESTING", keyword.first);
+
         }
         return publisherKeywords;
       } catch (Exception e) {

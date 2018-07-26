@@ -1,0 +1,38 @@
+{
+	"version": "0.0.1",
+	"tags": [{
+		"ads": [{
+			"content_source": "csm",
+			"ad_type": "banner",
+			"csm": {
+				"banner": {
+					"content": "",
+					"width": 320,
+					"height": 50
+				},
+				"timeout_ms": 1000,
+				"handler": [{
+					"param": "#{NETWORK_PARAMETER}",
+					"height": "50",
+					"width": "320",
+					"id": "380000",
+					"type": "ios",
+					"class": "AerServCustomEventBanner"
+				}, {
+					"param": "#{NETWORK_PARAMETER}",
+					"height": "50",
+					"width": "320",
+					"id": "380000",
+					"type": "android",
+					"class": "com.aerserv.appnexus.AerServCustomEventBanner"
+				}],
+				"trackers": [{
+					"impression_urls": ["https://lax1-mobile.adnxs.com/it?e=wqT_3QLvB8DvAwAAAwDWAAUBCM-Pr9UFEKm3no_19Y7SJBjMjcXeqdjZumQqNgmamZmZmZnpPxGaAQgQmek_GQAFAQgRQCERGwApEQnIMQAAAGCPwv0_MJa5pQQ41htA1htIAlCCovUdWOiNOWAAaKyfaHiI3wSAAQGKAQNVU0SSBQbwbJgBwAKgATKoAQawAQC4AQHAAQTIAQLQAQDYAQDgAQDwAQD6ARZDdXJyZW50Q29uZGl0aW9uc19MaXZligI7dWYoJ2EnLCAxMTkxOTI0LCAxNTIxMjA3MjQ3KTt1ZigncicsIDYyNzM4NjkwLCAuHgDwgZIC-QEhOXpZTWtRaTl1TVVIRUlLaTlSMFlBQ0RvalRrd0FEZ0FRQVJJMWh0UWxybWxCRmdBWUt3RWFBQndpQUY0ekNPQUFmQUZpQUVBa0FFQm1BRUJvQUVCcUFFRHNBRUF1UUYxcXcxc21wbnBQOEVCZGFzTmJKcVo2VF9KQVFBQUEBAxRQQV8yUUUBCnBBQUFEd1AtQUJBUFVCemN4TVA1Z0NBS0FDQUxVQwEeCEFMMAkI8E5NQUNBTWdDQU9BQ0FPZ0NBUGdDQUlBREFaQURBSmdEQWFnRHZiakZCN29ERVdSbFptRjFiSFFqVEVGWU1UbzBNRFkymgI5IUZRd0NBZ2k5LvwA9IYBNkkwNUlBUW9BRG9SWkdWbVlYVnNkQ05NUVZneE9qUXdOalku2ALgQ-ACw60r6gI1cGxheS5nb29nbGUuY29tL3N0b3JlL2FwcHMvZGV0YWlscz9pZD1jb20uYXdzLmFuZHJvaWSAAwCIAwGQAwCYAxegAwGqAwDAA6wCyAMB0gMsCAISKDVmOWExNmZkM2JlMWQ3YjM4MmExNTMzOTAxYTA1MjA0ZjdlNjdjOWbSAyQIBBIgNWYzMTlmMWQxZGQ0MDUwMzNlMjY2YjNhYTU4ODgxMmPSAygIChIkZmQ1ZjZlNjEtYzM5OC00NDlmLWJhYjktMGQ5NzVmZTU0NTNi2APa31ngAwDoAwL4AwCABACSBAYvdXQvdjKYBACiBAsxMi4wLjI0My4yMqgEuokDsgQPCAAQARjAAiAyKAAwADgCuAQAwAQAyAQA0gQRZGVmYXVsdCNMQVgxOjQwNjbaBAIIAeAEAfAEgqL1HfoEEgkAAACgcrFCQBEAAACAS4NewIIFD2NvbS4uASCIBQGYBQCgBf8RARQBwAUAyQVliRgA8D_SBQkJCQxkAADYBQHgBQHwBfX3BvoFBAgAEACQBgCYBgA.&s=4dc4218aef3d066f34745c3e515a14a3c5617d60&referrer=play.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.aws.android"],
+					"video_events": {}
+				}],
+				"request_url": "https://lax1-mobile.adnxs.com/mediation/v2/log_req?info=LwAAAAMABQEFAQjPj6_VBRCpt56P9fWO0iQY1hshmpmZmZmZ6T8ogqL1HTAOOAA.&s=c1f44697bedbaaca25cf09d9ef12cf546af8eeda",
+				"response_url": "https://lax1-mobile.adnxs.com/mediation/v2/log_resp?info=LwAAAAMABQEFAQjPj6_VBRCpt56P9fWO0iQY1hshmpmZmZmZ6T8ogqL1HTAOOAA.&s=c1f44697bedbaaca25cf09d9ef12cf546af8eeda"
+			}
+		}]
+	}]
+}

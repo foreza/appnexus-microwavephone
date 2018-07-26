@@ -7,7 +7,6 @@ import android.widget.FrameLayout;
 
 import com.aerserv.sdk.AerServSdk;
 import com.appnexus.opensdk.*;
-import com.appnexus.opensdk.R.*;
 
 // Reference: https://support.aerserv.com/hc/en-us/articles/213736326
 
@@ -25,15 +24,15 @@ public class Banana extends Activity implements AdListener {
         setContentView(R.layout.activity_banana);
 
         // Init the AerServ SDK
-        AerServSdk.init(this, "380000");
+        AerServSdk.init(this, "1003150");
 
 
         bav = new BannerAdView(this);
         iav = new InterstitialAdView(this);
 
         // Configure placement IDs for banner and interstitial
-        bav.setPlacementID("13194659");
-        iav.setPlacementID("13194659"); // 1326299
+        bav.setPlacementID("9002134");
+//        iav.setPlacementID("13194659"); //
 
         Log.v(logger, "Set Placement ID");
 
@@ -44,8 +43,13 @@ public class Banana extends Activity implements AdListener {
         bav.setShouldServePSAs(true);
         bav.setOpensNativeBrowser(true);
 
+        // Keywords allow you to track placements on a more granular level
+        bav.addCustomKeywords("fc0", "jc-aerserv-test");
+        bav.addCustomKeywords("wo1", "jc-aerserv-test");
+
+
         // Interstitial specific configurations
-        iav.setAdListener(this);
+//        iav.setAdListener(this);
 
 
         // Draw the banner
@@ -75,7 +79,7 @@ public class Banana extends Activity implements AdListener {
         }, 0);
 
 
-        iav.loadAd();
+//        iav.loadAd();
 
 
     }
