@@ -2,11 +2,19 @@ package com.vartyr.appnexus_microwavephone;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
-import com.aerserv.sdk.AerServSdk;
 import com.appnexus.opensdk.*;
+import com.inmobi.ads.InMobiAudienceBidder;
+
+// DOC note: import this
+import com.inmobi.plugin.appnexus.IMAudienceBidder;
+import com.inmobi.sdk.InMobiSdk;
+
 
 // Reference: https://support.aerserv.com/hc/en-us/articles/213736326
 
@@ -14,9 +22,24 @@ public class Banana extends Activity implements AdListener {
 
     final String logger = "[MICRO]";
 
-    // Set up an ad view with our placement ID.
-    private BannerAdView bav = null;
-    private InterstitialAdView iav = null;
+
+    // InMobi Audience Bidder variables
+    public String IMAB_SITE_ID = "1017739";                         // InMobi Site ID (From the AerServ SSUI)
+    private IMAudienceBidder inMobiAudienceBidder;                  // Reference to the AB singleton
+    public Boolean bannerLoaded = false;                            // Boolean to keep track of banner load status
+
+    public String AB_BannerPLC = "380000";                               // InMobi AerServ platform Banner PLC to update the banner bid parameter
+    public String AB_InterstitialPLC = "?";                         // InMobi AerServ platform Interstitial PLC to update the banner bid parameter
+
+    private IMAudienceBidder.BidToken bannerBidToken;               // Reference to the banner bid token we can use for refreshing bids
+    private IMAudienceBidder.BidToken interstitialBidToken;         // Reference to the interstitial bid token we can use for refreshing bids
+
+    // AppNexus BannerAd Views
+    public BannerAdView bav;
+    public InterstitialAdView iav;
+
+    public String APNSBannerPlacement = "12516242";
+    public String APNSInterstitialPlacement = "13194659";
 
 
 
@@ -25,125 +48,164 @@ public class Banana extends Activity implements AdListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_banana);
+        initializeAdSDKs();
+        initializeBannerView();
+        initializeInterstitialView();
+        getDisplaySDKVersions();
+    }
 
-        // Init the AerServ SDK
-        AerServSdk.init(this, "1017739");
 
+
+
+    public void initializeAdSDKs(){
+
+        // Init the Unified InMobi SDK
+        InMobiAudienceBidder.initialize(this, IMAB_SITE_ID);
+
+        // Get an instance of the IM Audience bidder
+        inMobiAudienceBidder = IMAudienceBidder.getInstance();
+
+
+    }
+
+
+    public void initializeBannerView(){
+
+        // If you are using the XML, call this code if we plan to inject the banner into the view instead
 
         bav = new BannerAdView(this);
-        iav = new InterstitialAdView(this);
-
-        // Configure placement IDs for banner and interstitial
-        bav.setPlacementID("12516242"); // weatherbug test: 12516242
-
-
-//        iav.setPlacementID("13194659"); //
-
-        Log.v(logger, "Set Placement ID");
-
-
-        // Banner specific configurations
-        bav.setAdSize(320, 50);
+        bav.setPlacementID(APNSBannerPlacement);
+        bav.setAdSize(300, 50);
         bav.setAutoRefreshInterval(60000); // Set to 0 to disable auto-refresh
         bav.setShouldServePSAs(true);
         bav.setOpensNativeBrowser(true);
 
-        // Keywords allow you to track placements on a more granular level
-//        bav.addCustomKeywords("fc0", "jc-aerserv-test");
-//        bav.addCustomKeywords("wo1", "jc-aerserv-test");
 
+         // Find the banner view in the XML (note: XML has the config)
+         // bav = findViewById(R.id.banner);
 
-        // Interstitial specific configurations
-//        iav.setAdListener(this);
-
-
-        // Draw the banner
-        FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
-        layout.addView(bav);
-
-
-
-
-        // ADD MY LISTENER BC I KINDA NEED THAT
-
-        AdListener adListener = new AdListener() {
+        // Set up our ad listener
+        AdListener bannerListener = new AdListener() {
             @Override
+
+            // On request failed, we want
             public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
-                if (errorCode == null) {
-                    Log.v("SIMPLEBANNER", "Call to loadAd failed");
-                } else {
-                    Log.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
-                }
+
+                // Ensure that we do not call loadAd again on the AdView
+                bannerLoaded = true;
+
+                // Update the banner bid on onAdRequestFailed
+                bannerBidToken.updateBid();
             }
 
             @Override
             public void onAdLoaded(AdView bav) {
-                Log.v("SIMPLEBANNER", "The Ad Loaded!");
+
+                // Ensure that we do not call loadAd again on the AdView
+                bannerLoaded = true;
+
+                // Update the banner bid on onAdLoaded
+                bannerBidToken.updateBid();
             }
 
-            @Override
-            public void onAdLoaded(NativeAdResponse bav) {
-                Log.v("SIMPLEBANNER", "The Banner Native Ad Loaded!");
-            }
 
             @Override
-            public void onAdExpanded(AdView bav) {
-                Log.v("SIMPLEBANNER", "Ad expanded");
-            }
+            public void onAdLoaded(NativeAdResponse bav) { Log.v(logger, "The Banner Native Ad Loaded!"); }
 
             @Override
-            public void onAdCollapsed(AdView bav) {
-                Log.v("SIMPLEBANNER", "Ad collapsed");
-            }
+            public void onAdExpanded(AdView bav) { Log.v(logger, "Ad expanded"); }
 
             @Override
-            public void onAdClicked(AdView bav) {
-                Log.v("SIMPLEBANNER", "Ad clicked; opening browser");
-            }
+            public void onAdCollapsed(AdView bav) { Log.v(logger, "Ad collapsed"); }
 
             @Override
-            public void onAdClicked(AdView adView, String clickUrl) {
-                Log.v("SIMPLEBANNER", "Ad clicked; app should handle url:" + clickUrl);
-            }
+            public void onAdClicked(AdView bav) { Log.v(logger, "Ad clicked; opening browser"); }
+
+            @Override
+            public void onAdClicked(AdView adView, String clickUrl) { Log.v(logger, "Ad clicked; app should handle url:" + clickUrl);}
         };
 
-        bav.setAdListener(adListener);
-
-        // Debug log
-        Log.v(logger, "FrameLayout - Banner added to view");
-
-        // Load / show the ads
-        loadAds();
-
+        // Set the banner ad listener on the banner
+        bav.setAdListener(bannerListener);
 
     }
 
 
+    public void setIMABForBanner() {
+
+        Log.d(logger, "updateIMABForBanner has been called.");
+
+        bannerBidToken = inMobiAudienceBidder.createBidToken(this, AB_BannerPLC,
+                bav, new IMAudienceBidder.IMAudienceBidderBannerListener() {
+
+                    @Override
+                    public void onBidReceived(@NonNull BannerAdView bannerAdView) {
+                        // Bid was received from Audience Bidder. Call loadAd on the updated bid object.
+
+                        // If the banner has not yet been loaded, call loadAd to load the ad into the view
+                        if (!bannerLoaded) {
+                            bannerAdView.loadAd();
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onBidFailed(@NonNull BannerAdView bannerAdView, @NonNull Error error) {
+                        // No Bid received from Audience Bidder. Call loadAd on the bid object.
+
+                        // If the banner has not yet been loaded, call loadAd on the updated ad view
+                        if (!bannerLoaded) {
+                            bannerAdView.loadAd();
+                        }
+
+                    }
+
+
+                });
+
+        // Call update bid to start this process
+        bannerBidToken.updateBid();
+    }
 
 
 
+    // Touch event to load the banner into the view
+    public void loadBanner(View view){
+        if (bav != null){
 
-    // Method to programatically load the ads
-    public void loadAds() {
+            // Get the Layout
+            FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
+            layout.addView(bav);
 
-        // This handler is needed if the banner does not refresh (ie: setAutoRefreshInterval is set to 0)
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.v(logger, "postDelayed fired, loadAd");
-                bav.loadAd();
-            }
-        }, 0);
+            // Set up the audience bidder
+            setIMABForBanner();
+        }
+    }
 
 
-//        iav.loadAd();
+
+    // Todo: Implement
+    public void initializeInterstitialView(){
+
+        iav = new InterstitialAdView(this);
 
 
     }
+
+    // Todo: Implement
+    public void loadInterstitial(View view){ }
+
+    // Todo: Implement
+    public void showInterstitial(View view){ }
+
 
 
     @Override
     public void onAdLoaded(AdView av) {
+
+     
+
         Log.v(logger, "onAdLoaded fired, The interstitial ad has loaded");
         // Now that the ad has loaded, we can show it to the user.
         InterstitialAdView iav = (InterstitialAdView) av;
@@ -163,7 +225,6 @@ public class Banana extends Activity implements AdListener {
         Log.v(logger, "onAdRequestFailed fired, Return code ==> " + rc);
 
     }
-
 
 
     @Override
@@ -186,35 +247,15 @@ public class Banana extends Activity implements AdListener {
 
 
 
+    public void getDisplaySDKVersions() {
 
+        TextView mpv = findViewById(R.id.ANSdkVersion);
+        mpv.setText("AppNexus SDK Version:");
 
-    // Forwarding Lifecycle Callbacks
-    /**
-      * To be called by the developer when the fragment/activity's onDestroy() function is called.
-      */
-    protected void activityOnDestroy(){
-
-     }
-
-    /**
-      * To be called by the developer when the fragment/activity's onPause() function is called.
-      */
-    protected void activityOnPause() {
-
-    }
-    /**
-      * To be called by the developer when the fragment/activity's onResume() function is called.
-      */
-    protected void activityOnResume(){
+        TextView imv = findViewById(R.id.IMSdkVersion);
+        imv.setText("IM SDK Version:" + InMobiSdk.getVersion());
 
     }
 
 
-    // TODO: Implement this at a later date
-    protected void checkForPermissions() {
-//        if (ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.WRITE_CALENDAR)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            // Permission is not granted
-//        }
-    }
 }
