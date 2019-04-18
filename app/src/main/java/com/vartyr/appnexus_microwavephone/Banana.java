@@ -18,20 +18,25 @@ public class Banana extends Activity implements AdListener {
     private BannerAdView bav = null;
     private InterstitialAdView iav = null;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_banana);
 
         // Init the AerServ SDK
-        AerServSdk.init(this, "1003150");
+        AerServSdk.init(this, "1017739");
 
 
         bav = new BannerAdView(this);
         iav = new InterstitialAdView(this);
 
         // Configure placement IDs for banner and interstitial
-        bav.setPlacementID("9002134");
+        bav.setPlacementID("12516242"); // weatherbug test: 12516242
+
+
 //        iav.setPlacementID("13194659"); //
 
         Log.v(logger, "Set Placement ID");
@@ -44,8 +49,8 @@ public class Banana extends Activity implements AdListener {
         bav.setOpensNativeBrowser(true);
 
         // Keywords allow you to track placements on a more granular level
-        bav.addCustomKeywords("fc0", "jc-aerserv-test");
-        bav.addCustomKeywords("wo1", "jc-aerserv-test");
+//        bav.addCustomKeywords("fc0", "jc-aerserv-test");
+//        bav.addCustomKeywords("wo1", "jc-aerserv-test");
 
 
         // Interstitial specific configurations
@@ -56,6 +61,54 @@ public class Banana extends Activity implements AdListener {
         FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
         layout.addView(bav);
 
+
+
+
+        // ADD MY LISTENER BC I KINDA NEED THAT
+
+        AdListener adListener = new AdListener() {
+            @Override
+            public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
+                if (errorCode == null) {
+                    Log.v("SIMPLEBANNER", "Call to loadAd failed");
+                } else {
+                    Log.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
+                }
+            }
+
+            @Override
+            public void onAdLoaded(AdView bav) {
+                Log.v("SIMPLEBANNER", "The Ad Loaded!");
+            }
+
+            @Override
+            public void onAdLoaded(NativeAdResponse bav) {
+                Log.v("SIMPLEBANNER", "The Banner Native Ad Loaded!");
+            }
+
+            @Override
+            public void onAdExpanded(AdView bav) {
+                Log.v("SIMPLEBANNER", "Ad expanded");
+            }
+
+            @Override
+            public void onAdCollapsed(AdView bav) {
+                Log.v("SIMPLEBANNER", "Ad collapsed");
+            }
+
+            @Override
+            public void onAdClicked(AdView bav) {
+                Log.v("SIMPLEBANNER", "Ad clicked; opening browser");
+            }
+
+            @Override
+            public void onAdClicked(AdView adView, String clickUrl) {
+                Log.v("SIMPLEBANNER", "Ad clicked; app should handle url:" + clickUrl);
+            }
+        };
+
+        bav.setAdListener(adListener);
+
         // Debug log
         Log.v(logger, "FrameLayout - Banner added to view");
 
@@ -64,6 +117,10 @@ public class Banana extends Activity implements AdListener {
 
 
     }
+
+
+
+
 
 
     // Method to programatically load the ads
@@ -106,6 +163,8 @@ public class Banana extends Activity implements AdListener {
         Log.v(logger, "onAdRequestFailed fired, Return code ==> " + rc);
 
     }
+
+
 
     @Override
     public void onAdClicked(AdView av) {
