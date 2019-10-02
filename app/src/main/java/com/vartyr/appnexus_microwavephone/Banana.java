@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.appnexus.opensdk.*;
+import com.appnexus.opensdk.utils.Settings;
 import com.inmobi.ads.InMobiAudienceBidder;
 
 // DOC note: import this
@@ -22,7 +23,6 @@ public class Banana extends Activity implements AdListener {
 
     final String logger = "[MICRO]";
 
-
     // InMobi Audience Bidder variables
     public String IMAB_SITE_ID = "1017739";                         // Sample InMobi Aerserv Platform Site ID (From the AerServ SSUI)
     private IMAudienceBidder inMobiAudienceBidder;                  // Keep a reference to the AB singleton
@@ -34,12 +34,12 @@ public class Banana extends Activity implements AdListener {
     private IMAudienceBidder.BidToken bannerBidToken;               // Reference to the banner bid token we can use for refreshing bids
 //    private IMAudienceBidder.BidToken interstitialBidToken;         // Reference to the interstitial bid token we can use for refreshing bids TODO: Test and validate Interstitial bids
 
-    // AppNexus BannerAd Views
+    // AppNexus BannerAd View
     public BannerAdView bav;
-    public InterstitialAdView iav;
+//    public InterstitialAdView iav;
 
-    public String APNSBannerPlacement = "12516242";
     public String WBBannerPlacement = "9002202";
+    public String APNSBannerPlacement = "12516242";
     public String APNSInterstitialPlacement = "13194659";
 
 
@@ -48,6 +48,7 @@ public class Banana extends Activity implements AdListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_banana);
+
         initializeAdSDKs();
         initializeBannerView();
         initializeInterstitialView();
@@ -65,26 +66,17 @@ public class Banana extends Activity implements AdListener {
         // Get an instance of the IM Audience bidder
         inMobiAudienceBidder = IMAudienceBidder.getInstance();
 
-
     }
 
 
     public void initializeBannerView(){
 
-        // If you are using the XML, call this code if we plan to inject the banner into the view instead
-
         bav = new BannerAdView(this);
-        // bav.setPlacementID(APNSBannerPlacement);
         bav.setPlacementID(WBBannerPlacement);
 
-        bav.setAdSize(300, 50);
-        bav.setAutoRefreshInterval(60000); // Set to 0 to disable auto-refresh
-        bav.setShouldServePSAs(true);
-        bav.setOpensNativeBrowser(true);
-
-
-         // Find the banner view in the XML (note: XML has the config)
-         // bav = findViewById(R.id.banner);
+        bav.setAdSize(320, 50);     // TODO: Does the ad size impact fill rates?
+        bav.setAutoRefreshInterval(15000);  // 15 sec to aid with testing
+        bav.setShouldServePSAs(false);      // Sample app mentions setting this to false to ensure fill
 
         // Set up our ad listener
         AdListener bannerListener = new AdListener() {
@@ -146,7 +138,17 @@ public class Banana extends Activity implements AdListener {
 
                         // If the banner has not yet been loaded, call loadAd to load the ad into the view
                         if (!bannerLoaded) {
-                            bannerAdView.loadAd();
+
+                            // bav.loadAd();
+
+                            // Do a runnable.
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    bav.loadAd();
+                                }
+                            }, 0);
                         }
 
 
@@ -158,7 +160,12 @@ public class Banana extends Activity implements AdListener {
 
                         // If the banner has not yet been loaded, call loadAd on the updated ad view
                         if (!bannerLoaded) {
-                            bannerAdView.loadAd();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    bav.loadAd();
+                                }
+                            }, 0);
                         }
 
                     }
@@ -174,14 +181,21 @@ public class Banana extends Activity implements AdListener {
 
     // Touch event to load the banner into the view
     public void loadBanner(View view){
+
+        // Ensure BAV is not null
         if (bav != null){
 
             // Get the Layout
             FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
+
+            // Inject the BAV into the layout
             layout.addView(bav);
 
             // Set up the audience bidder
             setIMABForBanner();
+        } else {
+            Log.e(logger, "BAV was null, not added to view");
+
         }
     }
 
@@ -249,7 +263,7 @@ public class Banana extends Activity implements AdListener {
     public void getDisplaySDKVersions() {
 
         TextView mpv = findViewById(R.id.ANSdkVersion);
-        mpv.setText("AppNexus SDK Version:");
+        mpv.setText("AppNexus SDK Version:" + Settings.getSettings().sdkVersion);
 
         TextView imv = findViewById(R.id.IMSdkVersion);
         imv.setText("IM SDK Version:" + InMobiSdk.getVersion());
