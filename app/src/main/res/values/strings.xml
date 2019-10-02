@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">appnexus-microwavephone</string>
+    <string name="load_banner">Load Banner</string>
+    <string name="kill_banner">Kill Banner</string>
+    <string name="apnex_sdk_version">APNEX SDK Version</string>
+    <string name="im_sdk_version">IM SDK Version</string>
 </resources>

@@ -12,35 +12,33 @@ import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Settings;
 import com.inmobi.ads.InMobiAudienceBidder;
 
-// DOC note: import this
 import com.inmobi.plugin.appnexus.IMAudienceBidder;
 import com.inmobi.sdk.InMobiSdk;
 
 
-// Reference: https://support.aerserv.com/hc/en-us/articles/213736326
-
 public class Banana extends Activity implements AdListener {
 
-    final String logger = "[MICRO]";
+    final String TAG = "[SampleApp]";
 
     // InMobi Audience Bidder variables
-    public String IMAB_SITE_ID = "1017739";                         // Sample InMobi Aerserv Platform Site ID (From the AerServ SSUI)
-    private IMAudienceBidder inMobiAudienceBidder;                  // Keep a reference to the AB singleton
+    public String IMAB_SITE_ID = "1017739";                         // Sample InMobi Aerserv SSUI Platform Site ID
+    private IMAudienceBidder inMobiAudienceBidder;                  // Maintain a reference to the AB singleton
     public Boolean bannerLoaded = false;                            // Boolean to keep track of banner load status
 
-    public String AB_BannerPLC = "1057270";                          // InMobi AerServ platform Banner PLC to update the banner bid parameter
-    // public String AB_InterstitialPLC = "?";                      // InMobi AerServ platform Interstitial PLC to update the banner bid parameter TODO: Test and validate Interstitial bids
-
+    public String AB_BannerPLC = "1057270";                         // InMobi AerServ platform Banner PLC to update the banner bid parameter
     private IMAudienceBidder.BidToken bannerBidToken;               // Reference to the banner bid token we can use for refreshing bids
-//    private IMAudienceBidder.BidToken interstitialBidToken;         // Reference to the interstitial bid token we can use for refreshing bids TODO: Test and validate Interstitial bids
 
-    // AppNexus BannerAd View
     public BannerAdView bav;
-//    public InterstitialAdView iav;
 
-    public String WBBannerPlacement = "9002202";
-    public String APNSBannerPlacement = "12516242";
-    public String APNSInterstitialPlacement = "13194659";
+    //    private IMAudienceBidder.BidToken interstitialBidToken;   // TODO: Test and validate Interstitial bids
+    //    public String AB_InterstitialPLC = "?";                   // TODO: Test and validate Interstitial bids
+    //    public InterstitialAdView iav;
+
+    public String bannerPlacementID = "9002202";
+
+    // public String APNSBannerPlacement = "12516242";
+    // public String APNSInterstitialPlacement = "13194659";
+
 
 
 
@@ -56,14 +54,12 @@ public class Banana extends Activity implements AdListener {
     }
 
 
-
-
     public void initializeAdSDKs(){
 
-        // Init the Unified InMobi SDK
+        // REQUIRED: Init the InMobiAudienceBidder. Without initialization, all InMobi bid requests *WILL* fail
         InMobiAudienceBidder.initialize(this, IMAB_SITE_ID);
 
-        // Get an instance of the IM Audience bidder
+        // Get the singleton instance of the IM Audience bidder for later
         inMobiAudienceBidder = IMAudienceBidder.getInstance();
 
     }
@@ -72,62 +68,66 @@ public class Banana extends Activity implements AdListener {
     public void initializeBannerView(){
 
         bav = new BannerAdView(this);
-        bav.setPlacementID(WBBannerPlacement);
+        bav.setPlacementID(bannerPlacementID);
 
         bav.setAdSize(320, 50);     // TODO: Does the ad size impact fill rates?
-        bav.setAutoRefreshInterval(15000);  // 15 sec to aid with testing
+        bav.setAutoRefreshInterval(15000);  // We'll set this to 15 sec refresh to aid with testing.
         bav.setShouldServePSAs(false);      // Sample app mentions setting this to false to ensure fill
 
         // Set up our ad listener
         AdListener bannerListener = new AdListener() {
             @Override
 
-            // On request failed, we want
+            // If the banner ad request FAILS, we want to still load the banner into the view so future banner ad refreshes can utilize the view
             public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
 
                 // Ensure that we do not call loadAd again on the AdView
                 bannerLoaded = true;
 
-                // Update the banner bid on onAdRequestFailed
+                // Update the InMobiAudienceBidder banner bid on onAdRequestFailed
                 bannerBidToken.updateBid();
+
+                Log.d(TAG, "Banner onAdRequestFailed with code: " + errorCode.toString());
             }
 
             @Override
+            // If the banner ad request load successfully, load the banner into the view so future banner ad refreshes can utilize the view
             public void onAdLoaded(AdView bav) {
 
                 // Ensure that we do not call loadAd again on the AdView
                 bannerLoaded = true;
 
-                // Update the banner bid on onAdLoaded
+                // Update the InMobiAudienceBidder banner bid on onAdLoaded
                 bannerBidToken.updateBid();
+
+                Log.d(TAG, "Banner onAdLoaded");
             }
 
 
             @Override
-            public void onAdLoaded(NativeAdResponse bav) { Log.v(logger, "The Banner Native Ad Loaded!"); }
+            public void onAdLoaded(NativeAdResponse bav) { Log.v(TAG, "The Banner Native Ad Loaded!"); }
 
             @Override
-            public void onAdExpanded(AdView bav) { Log.v(logger, "Ad expanded"); }
+            public void onAdExpanded(AdView bav) { Log.v(TAG, "Ad expanded"); }
 
             @Override
-            public void onAdCollapsed(AdView bav) { Log.v(logger, "Ad collapsed"); }
+            public void onAdCollapsed(AdView bav) { Log.v(TAG, "Ad collapsed"); }
 
             @Override
-            public void onAdClicked(AdView bav) { Log.v(logger, "Ad clicked; opening browser"); }
+            public void onAdClicked(AdView bav) { Log.v(TAG, "Ad clicked; opening browser"); }
 
             @Override
-            public void onAdClicked(AdView adView, String clickUrl) { Log.v(logger, "Ad clicked; app should handle url:" + clickUrl);}
+            public void onAdClicked(AdView adView, String clickUrl) { Log.v(TAG, "Ad clicked; app should handle url:" + clickUrl);}
         };
 
         // Set the banner ad listener on the banner
         bav.setAdListener(bannerListener);
-
     }
 
 
     public void setIMABForBanner() {
 
-        Log.d(logger, "updateIMABForBanner has been called.");
+        Log.d(TAG, "updateIMABForBanner has been called.");
 
         bannerBidToken = inMobiAudienceBidder.createBidToken(this, AB_BannerPLC,
                 bav, new IMAudienceBidder.IMAudienceBidderBannerListener() {
@@ -139,10 +139,7 @@ public class Banana extends Activity implements AdListener {
                         // If the banner has not yet been loaded, call loadAd to load the ad into the view
                         if (!bannerLoaded) {
 
-                            // bav.loadAd();
-
-                            // Do a runnable.
-
+                            // Use a handler to load the ad into the view. AN documentation mentions that if this is not done, the ad request may fail.
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -161,6 +158,8 @@ public class Banana extends Activity implements AdListener {
                         // If the banner has not yet been loaded, call loadAd on the updated ad view
                         if (!bannerLoaded) {
                             new Handler().postDelayed(new Runnable() {
+
+                                // Use a handler to load the ad into the view. AN documentation mentions that if this is not done, the ad request may fail.
                                 @Override
                                 public void run() {
                                     bav.loadAd();
@@ -173,13 +172,14 @@ public class Banana extends Activity implements AdListener {
 
                 });
 
-        // Call update bid to start this process
+        // Call update bid to start the bid process.
+        // Note: On subsequent banner ad refreshes, we'll use the banner listener to trigger future bid updates.
         bannerBidToken.updateBid();
     }
 
 
 
-    // Touch event to load the banner into the view
+    // Sample touch event to load the banner into the view
     public void loadBanner(View view){
 
         // Ensure BAV is not null
@@ -191,12 +191,38 @@ public class Banana extends Activity implements AdListener {
             // Inject the BAV into the layout
             layout.addView(bav);
 
-            // Set up the audience bidder
+            // Start the bidding process
             setIMABForBanner();
+
+            Log.d(TAG, "BAV is now loading");
+
+
         } else {
-            Log.e(logger, "BAV was null, not added to view");
+            Log.e(TAG, "BAV was null for some bizarre reason, not added to view. Initializing BAV");
+            initializeBannerView();
+        }
+    }
+
+    // Sample touch event to remove the banner from the view
+    public void killBanner(View view){
+
+        if (bav != null) {
+
+            FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
+            layout.removeView(bav);
+
+            bav.destroy();
+
+            Log.d(TAG, "BAV destroyed");
+
+            initializeBannerView();         // Note: Doing this to make the demo seamless. Since we tore down the banner view, we should re-init it.
+
+        } else {
+
+            Log.e(TAG, "BAV was null, not destroyed. We shouldn't be here!");
 
         }
+
     }
 
 
@@ -213,13 +239,11 @@ public class Banana extends Activity implements AdListener {
     public void showInterstitial(View view){ }
 
 
-
+    // TODO: Implement this section properly
     @Override
     public void onAdLoaded(AdView av) {
 
-     
-
-        Log.v(logger, "onAdLoaded fired, The interstitial ad has loaded");
+        Log.v(TAG, "onAdLoaded fired, The interstitial ad has loaded");
         // Now that the ad has loaded, we can show it to the user.
         InterstitialAdView iav = (InterstitialAdView) av;
         iav.show();
@@ -230,24 +254,24 @@ public class Banana extends Activity implements AdListener {
 
     @Override
     public void onAdLoaded(NativeAdResponse av) {
-        Log.v(logger, "onAdLoaded fired, The NativeAd interstitial has loaded");
+        Log.v(TAG, "onAdLoaded fired, The NativeAd interstitial has loaded");
     }
 
     @Override
     public void onAdRequestFailed(AdView av, ResultCode rc) {
-        Log.v(logger, "onAdRequestFailed fired, Return code ==> " + rc);
+        Log.v(TAG, "onAdRequestFailed fired, Return code ==> " + rc);
 
     }
 
 
     @Override
     public void onAdClicked(AdView av) {
-        Log.v(logger, "onAdClicked fired, Congrats! " );
+        Log.v(TAG, "onAdClicked fired, Congrats! " );
     }
 
     @Override
     public void onAdClicked(AdView av, String s) {
-        Log.v(logger, "onAdClicked fired, Congrats! " );
+        Log.v(TAG, "onAdClicked fired, Congrats! " );
     }
 
     @Override
