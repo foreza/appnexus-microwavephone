@@ -24,23 +24,23 @@ public class Banana extends Activity implements AdListener {
 
 
     // InMobi Audience Bidder variables
-    public String IMAB_SITE_ID = "1017739";                         // InMobi Site ID (From the AerServ SSUI)
-    private IMAudienceBidder inMobiAudienceBidder;                  // Reference to the AB singleton
+    public String IMAB_SITE_ID = "1017739";                         // Sample InMobi Aerserv Platform Site ID (From the AerServ SSUI)
+    private IMAudienceBidder inMobiAudienceBidder;                  // Keep a reference to the AB singleton
     public Boolean bannerLoaded = false;                            // Boolean to keep track of banner load status
 
-    public String AB_BannerPLC = "380000";                               // InMobi AerServ platform Banner PLC to update the banner bid parameter
-    public String AB_InterstitialPLC = "?";                         // InMobi AerServ platform Interstitial PLC to update the banner bid parameter
+    public String AB_BannerPLC = "1057270";                          // InMobi AerServ platform Banner PLC to update the banner bid parameter
+    // public String AB_InterstitialPLC = "?";                      // InMobi AerServ platform Interstitial PLC to update the banner bid parameter TODO: Test and validate Interstitial bids
 
     private IMAudienceBidder.BidToken bannerBidToken;               // Reference to the banner bid token we can use for refreshing bids
-    private IMAudienceBidder.BidToken interstitialBidToken;         // Reference to the interstitial bid token we can use for refreshing bids
+//    private IMAudienceBidder.BidToken interstitialBidToken;         // Reference to the interstitial bid token we can use for refreshing bids TODO: Test and validate Interstitial bids
 
     // AppNexus BannerAd Views
     public BannerAdView bav;
     public InterstitialAdView iav;
 
     public String APNSBannerPlacement = "12516242";
+    public String WBBannerPlacement = "9002202";
     public String APNSInterstitialPlacement = "13194659";
-
 
 
 
@@ -74,7 +74,9 @@ public class Banana extends Activity implements AdListener {
         // If you are using the XML, call this code if we plan to inject the banner into the view instead
 
         bav = new BannerAdView(this);
-        bav.setPlacementID(APNSBannerPlacement);
+        // bav.setPlacementID(APNSBannerPlacement);
+        bav.setPlacementID(WBBannerPlacement);
+
         bav.setAdSize(300, 50);
         bav.setAutoRefreshInterval(60000); // Set to 0 to disable auto-refresh
         bav.setShouldServePSAs(true);
@@ -185,18 +187,15 @@ public class Banana extends Activity implements AdListener {
 
 
 
-    // Todo: Implement
+    // TODO: Test and validate Interstitial bids
     public void initializeInterstitialView(){
-
-        iav = new InterstitialAdView(this);
-
-
+//        iav = new InterstitialAdView(this);
     }
 
-    // Todo: Implement
+    // TODO: Test and validate Interstitial bids
     public void loadInterstitial(View view){ }
 
-    // Todo: Implement
+    // TODO: Test and validate Interstitial bids
     public void showInterstitial(View view){ }
 
 

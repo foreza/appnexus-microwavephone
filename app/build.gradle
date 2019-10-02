@@ -25,7 +25,7 @@ dependencies {
     implementation files('libs/InMobiABAppNexusPlugin-1.0.0.aar')
 
     /* Required for InMobi SDK */
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation('com.google.android.gms:play-services-plus:15.0.1') {exclude group: 'com.android.support'}
 
     /* Update to latest AppNexus SDK:
