@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.vartyr.appnexus_microwavephone"
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -19,11 +18,22 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    compile 'com.appnexus.opensdk:appnexus-sdk:[4,5)'
-    implementation files('libs/aerserv-sdk.jar')
+    // implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // Latest InMobi SDK and AppNexus AB plugin
+    implementation files('libs/InMobiSDK.aar')
+    implementation files('libs/InMobiABAppNexusPlugin-1.0.0.aar')
+
+    /* Required for InMobi SDK */
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation('com.google.android.gms:play-services-plus:15.0.1') {exclude group: 'com.android.support'}
+
+    /* Update to latest AppNexus SDK:
+    https://wiki.appnexus.com/display/sdk/Integrate+the+SDK#IntegratetheSDK-Step1.GettheSDK
+     */
+    implementation('com.appnexus.opensdk:appnexus-sdk:[5,6)')
+
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }
