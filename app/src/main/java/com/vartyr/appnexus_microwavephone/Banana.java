@@ -21,11 +21,11 @@ public class Banana extends Activity implements AdListener {
     final String TAG = "[SampleApp]";
 
     // InMobi Audience Bidder variables
-    public String IMAB_SITE_ID = "1017739";                         // Sample InMobi Aerserv SSUI Platform Site ID
+    public String IMAB_SITE_ID = "1022221";                         // Sample InMobi Aerserv SSUI Platform Site ID
     private IMAudienceBidder inMobiAudienceBidder;                  // Maintain a reference to the AB singleton
     public Boolean bannerLoaded = false;                            // Boolean to keep track of banner load status
 
-    public String AB_BannerPLC = "1057270";                         // InMobi AerServ platform Banner PLC to update the banner bid parameter
+    public String AB_BannerPLC = "1069149"; // "1057270";                         // InMobi AerServ platform Banner PLC to update the banner bid parameter
     private IMAudienceBidder.BidToken bannerBidToken;               // Reference to the banner bid token we can use for refreshing bids
 
     public BannerAdView bav;
@@ -34,11 +34,12 @@ public class Banana extends Activity implements AdListener {
     //    public String AB_InterstitialPLC = "?";                   // TODO: Test and validate Interstitial bids
     //    public InterstitialAdView iav;
 
-    public String bannerPlacementID = "9002202";
+    public String bannerPlacementID = "18352370"; // "9002134"; // 9002134 ,, 9002202
+
+    public String mrecPlacementID = "12516230";
 
     // public String APNSBannerPlacement = "12516242";
     // public String APNSInterstitialPlacement = "13194659";
-
 
 
 
@@ -49,7 +50,7 @@ public class Banana extends Activity implements AdListener {
 
         initializeAdSDKs();
         initializeBannerView();
-        initializeInterstitialView();
+        // initializeInterstitialView();
         getDisplaySDKVersions();
     }
 
@@ -129,12 +130,15 @@ public class Banana extends Activity implements AdListener {
 
         Log.d(TAG, "updateIMABForBanner has been called.");
 
+
         bannerBidToken = inMobiAudienceBidder.createBidToken(this, AB_BannerPLC,
                 bav, new IMAudienceBidder.IMAudienceBidderBannerListener() {
 
                     @Override
                     public void onBidReceived(@NonNull BannerAdView bannerAdView) {
                         // Bid was received from Audience Bidder. Call loadAd on the updated bid object.
+
+                        bav = bannerAdView;
 
                         // If the banner has not yet been loaded, call loadAd to load the ad into the view
                         if (!bannerLoaded) {
@@ -143,6 +147,7 @@ public class Banana extends Activity implements AdListener {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+
                                     bav.loadAd();
                                 }
                             }, 0);
